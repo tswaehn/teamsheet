@@ -7,7 +7,8 @@
  */
   
   include("./PHPMailer/PHPMailerAutoload.php");
-
+  include("./PHPMailer/emailSettings.php");
+  
 function sendMail($email, $subject, $text, $attachment=array() ){
   global $emailSettings;
   

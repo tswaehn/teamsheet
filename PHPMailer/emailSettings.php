@@ -26,9 +26,9 @@ class EmailSettings {
 };
 
 $emailSettings = new EmailSettings( 
-            "", // user
-            "",  // pass
-            "", // reply email address
-            "", // smptHost
-            587   // smtpPort
+            SMTP_USER, // user
+            SMTP_PASS,  // pass
+            SMTP_REPLY, // reply email address
+            SMTP_SERVER, // smptHost
+            SMTP_HOST   // smtpPort
             );

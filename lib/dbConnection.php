@@ -10,7 +10,7 @@
   define( "INT", 4 );
   
   // table names
-  define( "DB_CONFIG", "gk_config" );
+  define( "DB_CONFIG", "ts_config" );
   define( "DB_USER", "ts_user" );
   define( "DB_TIMESHEETS", "ts_timesheets" );
   define( "DB_CUSTOMERS", "ts_customers" );
@@ -40,11 +40,25 @@
       //PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'"
     );
     
-    $pdo = new PDO('mysql:host=localhost;dbname='.$dbname.';', $user, $pass, $opt);  
-    // set connection to be able to communicate in UTF8
-    $pdo->exec("set names utf8");
+    try {
+      $pdo = new PDO('mysql:host=localhost;dbname='.$dbname.';', $user, $pass, $opt);  
+      // set connection to be able to communicate in UTF8
+      $pdo->exec("set names utf8");
+
+      lg("--- db connected to ".$dbname );
+    } catch ( PDOException $err ){
+      echo "ohh shit something went wrong while connecting to database.<p>";
+      echo "<pre>";
+      print_r($err);
+      echo "</pre>";
+      die();
+    }
     
-    lg("--- db connected to ".$dbname );
+    // 
+    if (!tableExists(DB_CONFIG)){
+      createConfigDb();
+    }
+    
   }
   
   function tableExists( $table ){
@@ -97,6 +111,23 @@
     }
     
     return $result;  
+  }
+  
+  function createConfigDb(){
+      $fields= array( "key", "value");
+      $fieldInfo= array();
+      
+      $fieldInfo["key"]["type"]= ASCII;
+      $fieldInfo["key"]["size"]= 200;
+      
+      $fieldInfo["value"]["type"]= ASCII;
+      $fieldInfo["value"]["size"]= 200;
+
+      // create a new table
+      createTable( DB_CONFIG, $fields, $fieldInfo ); 
+      
+      $sql= "ALTER TABLE `ts_config` ADD UNIQUE(`key`)";
+      dbExecute($sql);
   }
   
   function setConfigDb( $key, $value ){

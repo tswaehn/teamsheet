@@ -21,7 +21,7 @@ body{
 }
 
 .calendar td a {
-  border:thin solid green;
+  border:thin solid rgba(0,0,0,0.1);
   display:block;
   //color: rgba(20,20,20, 0.5);
 }
@@ -39,10 +39,10 @@ body{
 }
 
 .calendar a:hover{
-  background-color: rgba(0, 0, 200, 0.5);
+  background-color: rgba(0, 200, 200, 0.5);
   text-decoration: none;
   color:white;
-  border:thin solid red;
+  //border:thin solid red;
   display:block;
 }
 
@@ -53,31 +53,41 @@ body{
   background-color: rgba( 180, 180, 180, 0.8);
 }
 
-.today-cal {
-  background-color: rgba(0, 0, 200, 0.5);
-  border: thin solid blue;
+.missing {
+  color:red;
+}
+
+.incomplete {
+  color:orange;
+}
+
+.correct {
+  color: green;
+}
+
+.wow {
+  color: lightgreen;
+}
+
+.current-cal {
+  background-color: rgba(0, 200, 200, 0.5);
+  border: thin solid yellow;
   //font-weight: bold;
   color: rgba(255,255,255, 1);
 }
 
-.today-dur {
-  background-color: rgba(0, 0, 200, 0.5);
+.current-dur {
+  background-color: rgba(0, 200, 200, 0.5);
   border:thin solid blue;
   font-weight:bold;
 }
 
-.missing {
-  background-color:#FFFaFa;
+.today-cal {
+  //background-color: rgba(255,10,10, 0.3);
+  color:red;
+  font-weight: bold;
+  border: thin solid red;
 }
 
-.incomplete {
-  background-color:#ffff99;
-}
 
-.correct {
-  background-color: rgba( 200, 255, 200, 0.5);
-}
 
-.wow {
-  background-color: lightgreen;
-}

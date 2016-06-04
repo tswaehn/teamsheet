@@ -1,8 +1,8 @@
 <?php
 
-  $dbname="timesheet";
+  $dbname="teamsheet";
   $user="root";
-  $pass="";
+  $pass="password";
 
   define( "BUILD_NR", "v0.1.0");	
 
@@ -23,4 +23,13 @@
   
   //
   define("TABLE_TEMPLATE", "table.php");
+  
+  
+  // ---
+  define("SMTP_SERVER", "");
+  define("SMTP_PORT", "");
+  define("SMTP_USER", "");
+  define("SMTP_PASS", "");
+  define("SMTP_REPLY", "");
+  
 ?>

@@ -13,18 +13,25 @@
  * 
  */
 
-session_set_cookie_params( 3600*24*14, "/timeSheet", "", false, true );
+session_set_cookie_params( 3600*24*14, "/teamsheet", "", false, true );
 session_start();
 
 print_r( $_SESSION );
 
-include("./conf/config.php");
+if (file_exists( "./conf/dev_config.php")){
+  // use dev_config for local development; we usually dont want to publish dev used user/pass/server/... settings 
+  include("./conf/dev_config.php");
+} else {
+  include("./conf/config.php");
+}
+include("./lib/errorCodes.php");
+include("./lib/checkSetup.php");
 include("./lib/diverse.php");
 include("./lib/logging.php");
 include("./lib/dbConnection.php");
 include("./lib/dbUser.php");
 include("./lib/dbTimesheetTable.php");
-include("./lib/Timesheet.php");
+include("./lib/timesheet.php");
 include("./lib/drawCalendar.php");
 include("./lib/statistics.php");
 include("./lib/myTime.php");
@@ -142,7 +149,7 @@ $timesheetTable= new dbTimesheetTable();
   
   
 <title>
-..::TimeSheet::..
+..::TeamSheet::..
 </title>
 </head>
 

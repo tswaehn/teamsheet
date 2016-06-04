@@ -1,2 +1,3 @@
 syntax: glob
 *.log
+*dev_config.php

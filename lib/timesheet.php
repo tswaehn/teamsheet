@@ -139,6 +139,9 @@ $( document ).tooltip({
         case 7: $class.=" weekend"; break;
       }
       if ($timestamp == $day){
+        $class.= " current-cal";
+      }
+      if (MyTime::isToday($timestamp)){
         $class.= " today-cal";
       }
       $dateRow.= '<td> <a href="?day='.$timestamp.'" class="'.$class.'"> '.date("D",$timestamp).'<br>'.date("j",$timestamp).'</a> </td>';
@@ -152,7 +155,7 @@ $( document ).tooltip({
       $duration= $timesheetTable->getSumDurationsForDay( $timestamp );
       $class= "duration";
       if ($timestamp == $day){
-        $class.= " today-dur";
+        $class.= " current-dur";
       }      
       if ($duration <= 0){
         $class.= " missing";

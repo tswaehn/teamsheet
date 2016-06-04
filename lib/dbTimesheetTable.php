@@ -5,6 +5,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+define("DB_VERSION", "1.0");
+
 
 class dbTimesheetTable{
   
@@ -17,8 +19,31 @@ class dbTimesheetTable{
    
   }
   
+  function dbVersionOK(){
+    $version= getConfigDb("dbVersion");
+    
+    $ret= false;
+    
+    // fresh database
+    if (empty($version)){
+      // write db
+      setConfigDb("dbVersion", DB_VERSION);
+      return true;
+    }
+    
+    if (strcmp(DB_VERSION, $version) == 0 ){
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
   function dbCheckTable(){
-        
+
+    if (!$this->dbVersionOK() ){
+      die("migration of database needed - errorcode ".ERR_MIGRATION_OF_DATABASE_NEEDED);
+    }
+    
     // 
     if (!tableExists(DB_TIMESHEETS)){
       $fields= array( "tid", "customerID", "projectID", "taskID", "uid", "timestamp", "duration", "itemAction" );
@@ -119,7 +144,7 @@ class dbTimesheetTable{
     
     // 
     if (!tableExists(DB_TASKS)){
-      $fields= array( "taskID", "tname", "notes" );
+      $fields= array( "taskID", "tname", "factor", "notes" );
 
       $fieldInfo= array();
       
@@ -128,6 +153,9 @@ class dbTimesheetTable{
 
       $fieldInfo["tname"]["type"]= ASCII;
       $fieldInfo["tname"]["size"]= 100;
+      
+      $fieldInfo["factor"]["type"]= FLOAT;
+      $fieldInfo["factor"]["size"]= 0;
       
       $fieldInfo["notes"]["type"]= ASCII;
       $fieldInfo["notes"]["size"]= 100;
@@ -138,22 +166,22 @@ class dbTimesheetTable{
 
       // now add some tasks
       $lines= array();
-      $lines[]= array( "0", "none", "" );
+      $lines[]= array( "0", "none", 0, "" );
 
-      $lines[]= array( "1000", "[vacation]", "" );     
-      $lines[]= array( "1001", "[accumulated leave]", "" );     
+      $lines[]= array( "100", "[vacation]", 1,"" );     
+      $lines[]= array( "101", "[accumulated leave]", -1, "" );     
       
-      $lines[]= array( "1002", "[sick leave]", "" );     
-      $lines[]= array( "1003", "[public holiday]", "" );     
-      $lines[]= array( "1004", "[compensation]", "" );     
-      $lines[]= array( "1005", "[we compensation]", "" );     
+      $lines[]= array( "102", "[sick leave]", 1, "" );     
+      $lines[]= array( "103", "[public holiday]", 1, "" );     
+      $lines[]= array( "104", "[compensation]", -1, "" );     
+      $lines[]= array( "105", "[sunday compensation]", -1, "" );     
       
-      $lines[]= array( "", "onsite paid", "" );
-      $lines[]= array( "", "onsite goodwill", "" );
-      $lines[]= array( "", "onsite warranty", "" );
-      $lines[]= array( "", "installation", "" );
-      $lines[]= array( "", "telephone support", "" );
-      $lines[]= array( "", "email support", "" );     
+      $lines[]= array( "1000", "onsite paid", 1, "" );
+      $lines[]= array( "", "onsite goodwill", 1, "" );
+      $lines[]= array( "", "onsite warranty", 1, "" );
+      $lines[]= array( "", "installation", 1, "" );
+      $lines[]= array( "", "telephone support", 1, "" );
+      $lines[]= array( "", "email support", 1, "" );     
       
       
       insertIntoTable( DB_TASKS, $fields, $lines );

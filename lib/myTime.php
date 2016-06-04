@@ -138,5 +138,29 @@ class MyTime {
     return $arr;
   }
   
+  /*
+   * input: timestamp
+   * 
+   */
+  static function isToday( $day ){
+    $today= time();
+    $todayArr= MyTime::timeToArray( $today );
+    
+    $dayArr= MyTime::timeToArray( $day );
+    
+    // compare
+    if ($dayArr["year"] != $todayArr["year"]){
+      return false;
+    }
+    if ($dayArr["mon"] != $todayArr["mon"]){
+      return false;
+    }
+    if ($dayArr["mday"] != $todayArr["mday"]){
+      return false;
+    }
+    
+    return true;
+    
+  }
   
 }
