@@ -35,24 +35,56 @@ a:visited { text-decoration: none; }
 a:hover { text-decoration: underline; }
 a:active { text-decoration: none; }
 
-
-#work-button {
-  text-align:left;
+.button {
+  padding:10px;
 }
 
-
-label {
-  display: inline-block;
-  width: 5em;
-      
-}
-
-#timesheet-table {
+#header {
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 10px;
+  height: 300px;
   width:100%;
+  overflow: hidden;
 }
 
-#table-navi {
-  font-size: large;
-  font-weight: bold;
+#header img {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width:100%;
+  height:300px;
+
 }
 
+#header #title {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    color: rgba(255,255,255,0.7 );
+    font-weight: bold;
+    font-size: 100px;
+}
+
+#header #timestamp {
+    position: absolute;
+    right: 30px;
+    top: 250px;
+    color: rgba(255,255,255,0.7 );
+    font-weight: bold;
+    font-size: 40px;
+}
+#header #gradient {
+    position: absolute;
+    top:0px;
+    left:0px;
+    width:100%;
+    height:300px;
+    background: green;        
+    background:-moz-linear-gradient(top down,     rgba(255,255,255, 0.5), rgba(0,0,0, 0.5));
+    background:-webkit-linear-gradient(top down,  rgba(255,255,255, 0.5), rgba(0,0,0, 0.5));
+    background:-o-linear-gradient(top down,       rgba(255,255,255, 0.5), rgba(0,0,0, 0.5));
+    background: linear-gradient(                  rgba(0,0,0, 0.0), rgba(0,0,0, 0.5));
+    //border:thin solid black;
+
+}

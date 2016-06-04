@@ -1,50 +1,61 @@
 
-html{
-  
+#timesheet-table {
+  width:100%;
+  margin:0px;
+  border:none;
 }
 
-body{
-  
-  line-height: 1;
-  
+#timesheet-table td,th {
+  text-align:center;
+  margin-left:auto;
+  padding-top:10px;
+  padding-bottom:10px;
 }
 
-.calendar {
+#calendar-navi {
+  font-size: large;
+  font-weight: bold;
+  width:500px;
+  margin:auto;
+}
+
+#calendar {
   border-spacing:0;
   margin:auto;
-  width:50%;
+  width:100%;
 }
 
-.calendar td {
+#calendar td {
   padding:0px;
   margin:0;  
 }
 
-.calendar td a {
+#calendar td a {
   border:thin solid rgba(0,0,0,0.1);
   display:block;
   //color: rgba(20,20,20, 0.5);
 }
 
-
-.date {
-  width:40px;
-  //border:thin solid red;
-  padding:3px;
-}
-
-.duration{
-  min-height: 30px;
-  line-height: 30px;
-}
-
-.calendar a:hover{
+#calendar a:hover{
   background-color: rgba(0, 200, 200, 0.5);
   text-decoration: none;
   color:white;
   //border:thin solid red;
   display:block;
 }
+
+
+.date {
+  //width:40px;
+  //border:thin solid red;
+  padding:3px;
+}
+
+.duration{
+  min-height: 20px;
+  line-height: 20px;
+}
+
 
 .weekday {
   background-color: rgba(240, 240, 240, 0.8);
@@ -59,6 +70,7 @@ body{
 
 .incomplete {
   color:orange;
+  font-weight: bold;
 }
 
 .correct {
@@ -66,7 +78,8 @@ body{
 }
 
 .wow {
-  color: lightgreen;
+  color: darkred;
+  font-weight:bold;
 }
 
 .current-cal {
@@ -89,5 +102,26 @@ body{
   border: thin solid red;
 }
 
+.not-active {
+   pointer-events: none;
+   cursor: default;
+}
 
+#edit-save {
+  background:green;
+  width:50%;
+  margin-left:auto;
+  
+}
 
+div.ui-tooltip {
+  max-width: 800px;
+}
+.ui-tooltip table {
+  border:none;
+}
+
+.ui-tooltip.td {
+  padding:3px;
+  font-size:x-small;
+}

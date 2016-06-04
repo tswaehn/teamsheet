@@ -113,6 +113,33 @@
     return $result;  
   }
   
+  function dbQuickExecute( $sql ){
+    global $pdo;
+    
+    if (empty($sql)){
+      error("dbExecute();", "empty sql statement");
+      return null;
+    }
+    
+    $sql .= ";";
+    
+    try {
+
+	$starttime = microtime(true); 
+	
+	$result = $pdo->query( $sql);
+	
+	$endtime = microtime(true); 
+	$timediff = $endtime-$starttime;
+	
+    } catch (Exception $e) {
+	error("dbExecute();", "exec failed ".$sql );
+	return;
+    } 
+    
+    return $result;  
+  }
+  
   function createConfigDb(){
       $fields= array( "key", "value");
       $fieldInfo= array();

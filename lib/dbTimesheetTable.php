@@ -101,7 +101,7 @@ class dbTimesheetTable{
 
       // now add some customers
       $lines= array();
-      $lines[]= array( "0", "none", "" );
+      $lines[]= array( "0", "", "none selected" );
       $lines[]= array( "", "Customer A", "" );
       $lines[]= array( "", "Customer B", "" );
       $lines[]= array( "", "Customer C", "" );
@@ -131,7 +131,7 @@ class dbTimesheetTable{
 
       // now add some projects
       $lines= array();
-      $lines[]= array( "0", "none", "" );
+      $lines[]= array( "0", "", "none selected" );
       $lines[]= array( "", "Project1", "" );
       $lines[]= array( "", "Project2", "" );
       $lines[]= array( "", "Project3", "" );
@@ -166,7 +166,7 @@ class dbTimesheetTable{
 
       // now add some tasks
       $lines= array();
-      $lines[]= array( "0", "none", 0, "" );
+      $lines[]= array( "0", "", 0, "none selected" );
 
       $lines[]= array( "100", "[vacation]", 1,"" );     
       $lines[]= array( "101", "[accumulated leave]", -1, "" );     
@@ -232,8 +232,8 @@ class dbTimesheetTable{
    *   "customerID", "projectID", "taskID", "uid", "timestamp", "duration", "itemAction"
    */
   function saveTimesheetItem( $lines ){
-    echo "saving";
-    print_r($lines);
+    lg( "saving" );
+    lg( print_r($lines, true));
     
     $fields= array("customerID", "projectID", "taskID", "uid", "timestamp", "duration", "itemAction" );
     insertIntoTable( DB_TIMESHEETS, $fields, $lines);
@@ -298,6 +298,29 @@ class dbTimesheetTable{
 
     return $durationPerDay;
   }
+
+  function getEntriesForThisMonth( $currentDay ){
+    global $user;
+    
+    $currentDayArr= MyTime::timeToArray($currentDay);
+    $daysOfMonth= MyTime::getNrOfDaysPerMonth($currentDay);
+    
+    $timeSheetItems= array();
+    for ($i=1; $i<= $daysOfMonth; $i++){
+      $day= $currentDayArr;
+      $day["d"]= $i;
+      
+      $timestamp= MyTime::arrayToTime( $day );
+      
+      $array= $this->getTimesheetItems($user->uid, MyTime::timestampToMySQL($timestamp));
+      
+      $timeSheetItems[$timestamp]= $array;
+    }
+    
+    
+    return $timeSheetItems;
+  }
+  
   
   function getDurationsByDay( $week ){
     global $user;

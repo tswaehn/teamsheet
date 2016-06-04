@@ -60,10 +60,10 @@ class Timesheet {
   
 $( document ).tooltip({
     content: function() {
-        return $(this).attr(\'title\')+\'hello\';
+        return $(this).attr(\'title\');
     }
 });
-  
+
         function addRow(tableID) {
 
             var table = document.getElementById(tableID);
@@ -114,12 +114,36 @@ $( document ).tooltip({
         </script>' ;
     
   }
+  function renderToolTip( $timeSheetItems ){
+    if (empty($timeSheetItems)){
+      return "";
+    }
+    
+    $out= '<table>';
+    $out.= "<tr><th>Customer</th><th>Project</th><th>Task</th><th>Duration</th><th>Action</th></tr>";
+    foreach ($timeSheetItems as $item ){
+      $out.= "<tr>";
+      $out.= "<td>".$item["customer"]."</td>";
+      $out.= "<td>".$item["project"]."</td>";
+      $out.= "<td>".$item["task"]."</td>";      
+      $out.= "<td>".$item["duration"]."</td>";      
+      $out.= "<td>".$item["itemAction"]."</td>";      
+      $out.= "</tr>";
+    }
+    $out.= '</table>';
+    
+    return $out;
+    
+  }
+  
   
   function renderCalenderView( $day, $mode ){
     global $timesheetTable;
     
     if ($mode== "edit"){
-      return "";
+      $active= "not-active";
+    } else {
+      $active= "";
     }
     
     $days= MyTime::getDaysOfMonth($day);
@@ -144,15 +168,20 @@ $( document ).tooltip({
       if (MyTime::isToday($timestamp)){
         $class.= " today-cal";
       }
+      $class.= " ".$active;
       $dateRow.= '<td> <a href="?day='.$timestamp.'" class="'.$class.'"> '.date("D",$timestamp).'<br>'.date("j",$timestamp).'</a> </td>';
     }
     $dateRow.="</tr>";
 
+    // --- get all items for this month
+    $timeSheetItems= $timesheetTable->getEntriesForThisMonth( $day );
+    
     // --- prepare the row for duration related data
     $statusRow="<tr>";
     foreach ($days as $timestamp=>$item){
       
       $duration= $timesheetTable->getSumDurationsForDay( $timestamp );
+      
       $class= "duration";
       if ($timestamp == $day){
         $class.= " current-dur";
@@ -166,14 +195,15 @@ $( document ).tooltip({
       } else {
         $class.= " wow";
       }
-      $tooltip="first line<br>second line";
-      $statusRow.= '<td ><a href="?day='.$timestamp.'" class="'.$class.'" >'.$duration.'</a> </td>';
+      $class.= " ".$active;      
+      $tooltip= $this->renderToolTip($timeSheetItems[$timestamp]);
+      $statusRow.= '<td title="'.$tooltip.'" ><a href="?day='.$timestamp.'" class="'.$class.'"  >'.$duration.'<br>3|5</a> </td>';
     }
     $statusRow.="</tr>";
         
     // --- finally output 
     $out= "";
-    $out.= '<table class="calendar">';
+    $out.= '<table id="calendar">';
     $out.= $dateRow;
     $out.= $statusRow;
     $out.= '</table>';
@@ -185,7 +215,9 @@ $( document ).tooltip({
   function renderTableNavi($day, $mode ){
 
     if ($mode== "edit"){
-      return "";
+      $switch="disabled";
+    } else {
+      $switch= "";
     }
 
     // --- prev / next calc
@@ -198,11 +230,11 @@ $( document ).tooltip({
     
     
     $out='';
-    //$out.= '<h3>';
-    $out.= '<input type="button" value="&lt;Prev" onclick="jumpToDay('.$prev.')" /> ';
+    $out.= '<div id="calendar-navi">';
+    $out.= '<input type="button" class="button" value="&lt;Prev" onclick="jumpToDay('.$prev.')" '.$switch.'/> ';
     $out.= '<span id="table-navi">&nbsp;&nbsp;&nbsp;'.date("F Y", $day).'&nbsp;&nbsp;&nbsp;</span>';
-    $out.= '<input type="button" value="Next&gt;" onclick="jumpToDay('.$next.')" />';
-    //$out.= '</h3>';
+    $out.= '<input type="button" class="button" value="Next&gt;" onclick="jumpToDay('.$next.')" '.$switch.' />';
+    $out.= '</div>';
     
     return $out;
   }
@@ -212,12 +244,12 @@ $( document ).tooltip({
    * multiple selection options "list"
    * and on selected value "value"
    */
-  function renderDropDown( $list, $name, $value ){
+  function renderDropDown( $list, $name, $value, $enabled= true ){
     
     $text='';
-    $text.= '<select name="'.$name.'[]" size="1" style="width:130px;">';
+    $text.= '<select name="'.$name.'[]" size="1" style="width:130px;" >';
     
-    array_unshift( $list, "");
+    //array_unshift( $list, "");
     foreach($list as $item ){
       if (strcasecmp($value, $item)==0){
         $selected= "selected";
@@ -233,13 +265,13 @@ $( document ).tooltip({
   
   function renderNumber( $name, $value ){
     
-    $text= '<input type="text" name="'.$name.'[]" value="'.$value.'" style="width:130px;text-align:left;">';
+    $text= '<input type="text" name="'.$name.'[]" value="'.$value.'" style="width:50px;text-align:left;">';
     return $text;
   }
 
   function renderText( $name, $value ){
     
-    $text= '<input type="text" name="'.$name.'[]" value="'.$value.'" style="width:500px;text-align:left;">';
+    $text= '<input type="text" name="'.$name.'[]" value="'.$value.'" maxlength="60" style="width:300px;text-align:left;">';
     return $text;
   }
   
@@ -259,7 +291,8 @@ $( document ).tooltip({
          $width="130px";
        }
       if ($mode=="view"){
-        $line.= '<input disabled type="edit" name="'.$field.'[]" value="'.$data[$field].'" style="width:'.$width.';" />'; // note: disabled fields will not be posted!!
+        //$line.= '<input disabled type="edit" name="'.$field.'[]" value="'.$data[$field].'" style="width:'.$width.';" />'; // note: disabled fields will not be posted!!
+        $line.= $data[$field];
         $line.= '<input type="hidden" name="'.$field.'[]" value="'.$data[$field].'" />';
       } else {
          switch ($field){
@@ -320,19 +353,23 @@ $( document ).tooltip({
     if (getUrlParam("actionType")=="add_row_work"){
       echo $this->renderWorkLine( array(), $mode );
     }
-    if ($mode == "edit"){
-      echo '<tr><td colspan="5" id="work-button"><input type="button" value="Add Row" onclick="reloadPage(\'add_row_work\')"/> </td></tr>';
-    }
-        
     
+    // --- buttons 
+    echo '<tr><td colspan="5">';
+    echo '<div id="edit-save">';
+      if ($mode== "edit"){
+        echo '<input type="button" class="button" value="Add Row" onclick="reloadPage(\'add_row_work\')" style="float:left"/>';
+        echo '<input type="submit" class="button" name="doSomething" value="save" style="float:right" />';
+        echo '<input type="submit" class="button" name="doSomething" value="cancel" onclick="resetPage()" style="float:right" />';
+      } else {
+        echo '<input type="button" class="button" value="edit" onclick="editMode()" style="float:right" />';
+      }
+    echo '</div>';
+    echo '</td></tr>';
+    
+    
+    // --- table end
     echo '</table>';
-    if ($mode== "edit"){
-      echo '<input type="submit" name="doSomething" value="save">';
-      echo '<input type="submit" name="doSomething" value="cancel" onclick="resetPage()">';
-    } else {
-      echo '<input type="button" value="edit" onclick="editMode()">';
-    }
-    
     echo '</form>';
     
   }
@@ -347,8 +384,8 @@ $( document ).tooltip({
     $texts= getUrlParam("itemAction");
 
     
-    echo "<p>";
-    print_r($tasks);
+    //echo "<p>";
+    //print_r($tasks);
     
     $work= array();
     if (!empty($tasks)){
@@ -373,7 +410,7 @@ $( document ).tooltip({
     global $timesheetTable;
     global $user;
     
-    echo "saving now!";
+    lg( "saving now!" );
     
     $day= getUrlParam("day");
     $data= $this->importDataFromPost();
@@ -381,8 +418,8 @@ $( document ).tooltip({
     $dbData= array();
     foreach( $data as $item ){
       $dbItem= array();
-      print_r($item["customer"]);
-      print_r($this->customers);
+      lg( print_r($item["customer"] ,true ));
+      lg( print_r($this->customers, true ));
       
       $key= array_search( $item["customer"], $this->customers );
       $dbItem[]= $key;

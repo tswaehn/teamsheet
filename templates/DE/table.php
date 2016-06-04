@@ -52,20 +52,23 @@ if ($mode=="view"){
   
 }
 
-print_r($data);
+//print_r($data);
 $timesheet->renderTable($day, $data, $mode);
 
 //$timesheet->render( $day, $mode );
 
-print_r( $_POST );
+//print_r( $_POST );
 
 //$calendar = new Calendar();
 //echo $calendar->show();
 
 
 echo "<p>";
+echo '<pre>';
 $statistics= new Statistics();
 
 $statistics->renderWeek( $day );
+
+echo '</pre>';
   
 

@@ -4,11 +4,13 @@
  * 
  * @copyright Copyright (C) 2000 Darren McClelland <darren@seattleserver.com>, <dmuser1@aa.net>
  * @copyright Copyright (C) 2004 Sebastian Mendel <phptimesheet at sebastianmendel dot de>
+ * @copyright Copyright (C) 2016 Sven Ginka <sven.ginka@gmail.com>
  * @license http://www.opensource.org/licenses/gpl-license.php GNU General Public License  - GPL
- * @package phpTimeSheet
+ * @package phpTeamSheet
  * @author Darren McClelland <darren@seattleserver.com>, <dmuser1@aa.net> 
  * @author Sebastian Mendel <phptimesheet@sebastianmendel.de> 
- * @version $Id: index.php,v 1.8 2004/06/23 12:50:41 cybot_tm Exp $
+ * @author Sven Ginka <sven.ginka@gmail.com>
+ * @version $Id: index.php,v 2.0 2016/06/04 $
  * 
  * 
  */
@@ -16,7 +18,7 @@
 session_set_cookie_params( 3600*24*14, "/teamsheet", "", false, true );
 session_start();
 
-print_r( $_SESSION );
+//print_r( $_SESSION );
 
 if (file_exists( "./conf/dev_config.php")){
   // use dev_config for local development; we usually dont want to publish dev used user/pass/server/... settings 
@@ -127,12 +129,7 @@ if ( isset( $_REQUEST['updatepasswd'] ) )
     $message = sprintf( 'Updated user password for %s', $myworker->get_name() );
 } // if(isset($updatepasswd)
 
-echo "<h1>connected</h1>";
-
-print_r($user);
-
-echo "connected";
-
+lg( "user ".$user->uname." ".$user->uid );
 $timesheetTable= new dbTimesheetTable();
 
 ?>
@@ -154,11 +151,18 @@ $timesheetTable= new dbTimesheetTable();
 </head>
 
 <body>
-
+  <!-- this is the header !-->
+  <?php include("./lib/header.php") ?> 
+  
+  
   <?php 
     include( template( TABLE_TEMPLATE ));
     ?>
   
+  
+  <?php
+    include("./lib/footer.php");
+  ?>
 </body>
 
 </html>

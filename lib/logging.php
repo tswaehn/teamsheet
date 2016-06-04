@@ -55,7 +55,7 @@ function backTrace( $text ){
 function lg( $text ){
   $text .= "\n";
   
-  echo $text;
+  //echo $text;
   
   file_put_contents( LOG_FILE, $text, FILE_APPEND );
 } 
