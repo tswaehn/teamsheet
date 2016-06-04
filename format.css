@@ -88,3 +88,15 @@ a:active { text-decoration: none; }
     //border:thin solid black;
 
 }
+
+#statusbar-month {
+  background-color: rgba(100,100,100,0.5);
+  min-height: 50px;
+  width:100%;
+}
+
+#statusbar-total {
+  background-color: rgba(200,200,200,0.5);
+  min-height: 50px;
+  width:100%;
+}

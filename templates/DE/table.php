@@ -62,6 +62,14 @@ $timesheet->renderTable($day, $data, $mode);
 //$calendar = new Calendar();
 //echo $calendar->show();
 
+echo '<div id="statusbar-month">';
+
+echo '</div>';
+
+echo '<div id="statusbar-total">';
+
+echo '</div>';
+
 
 echo "<p>";
 echo '<pre>';
