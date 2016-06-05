@@ -17,6 +17,10 @@ class dbTimesheetTable{
   function __construct() {
     $this->dbCheckTable();
    
+    $this->customers= $this->getCustomers();
+    $this->projects= $this->getProjects();
+    $this->tasks= $this->getTasks();
+    
   }
   
   function dbVersionOK(){
@@ -195,7 +199,7 @@ class dbTimesheetTable{
     
     $customers= array();
     foreach( $result as $item ){
-      $customers[$item["customerID"]]= $item["cname"];
+      $customers[$item["customerID"]]= array("name"=>$item["cname"] );
     }
     asort($customers);
     return $customers;
@@ -207,7 +211,7 @@ class dbTimesheetTable{
     
     $projects= array();
     foreach( $result as $item ){
-      $projects[$item["projectID"]]= $item["pname"];
+      $projects[$item["projectID"]]= array("name"=>$item["pname"]);
     }
     asort($projects);
     return $projects;
@@ -215,15 +219,42 @@ class dbTimesheetTable{
 
   function getTasks(){
     
-    $result= dbGetFromTable( DB_TASKS, "taskID,tname", "1", 5000 );
+    $result= dbGetFromTable( DB_TASKS, "taskID,tname,factor", "1", 5000 );
     
     $tasks= array();
     foreach( $result as $item ){
-      $tasks[$item["taskID"]]= $item["tname"];
+      $tasks[$item["taskID"]]= array("name"=>$item["tname"], "factor"=>$item["factor"] );
     }
     
     asort( $tasks );
     return $tasks;
+  }
+  
+  function getCustomerIDbyName( $customer ){
+    foreach( $this->customers as $key=>$item ){
+      if (strcmp($customer, $item["name"])==0){
+        return $key;
+      }
+    }
+    return 0;
+  }
+
+  function getProjectIDbyName( $project ){
+    foreach( $this->projects as $key=>$item ){
+      if (strcmp($project, $item["name"])==0){
+        return $key;
+      }
+    }
+    return 0;
+  }
+
+  function geTaskIDbyName( $task ){
+    foreach( $this->tasks as $key=>$item ){
+      if (strcmp($task, $item["name"])==0){
+        return $key;
+      }
+    }
+    return 0;
   }
   
   /* this function stores some timesheet items 
@@ -251,10 +282,6 @@ class dbTimesheetTable{
   
   function getTimesheetItems( $uid, $timestamp ){
     
-    $customers= $this->getCustomers();
-    $projects= $this->getProjects();
-    $tasks= $this->getTasks();
-    
     $fields= array("customerID", "projectID", "taskID", "uid", "timestamp", "duration", "itemAction" );
     $search= "`uid`='".$uid."' AND `timestamp`='".$timestamp."'";
     $result= dbGetFromTable( DB_TIMESHEETS, $fields, $search, 100 );
@@ -263,9 +290,10 @@ class dbTimesheetTable{
     foreach ($result as $row){
       
       $line= array();
-      $line["customer"]= $customers[$row["customerID"]];
-      $line["project"]= $projects[$row["projectID"]];
-      $line["task"]= $tasks[$row["taskID"]];
+      $line["customer"]= $this->customers[$row["customerID"]]["name"];
+      $line["project"]= $this->projects[$row["projectID"]]["name"];
+      $line["task"]= $this->tasks[$row["taskID"]]["name"];
+      $line["factor"]= $this->tasks[$row["taskID"]]["factor"];
       $line["duration"]= $row["duration"];
       $line["itemAction"]= $row["itemAction"];
       

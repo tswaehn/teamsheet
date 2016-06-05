@@ -3,18 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/timeSheet/index.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/lib/diverse.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/lib/dbTimesheetTable.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/lib/myTime.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/format.css</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/conf/config.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/lib/timesheet.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/lib/dbConnection.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/templates/DE/noAuth.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/calendar.css</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/lib/statistics.php</file>
-            <file>file:/C:/xampp/htdocs/timeSheet/templates/DE/table.php</file>
+            <file>file:/home/tswaehn/public_html/git_dev/teamsheet/lib/dbConnection.php</file>
+            <file>file:/home/tswaehn/public_html/git_dev/teamsheet/lib/dbTimesheetTable.php</file>
         </group>
     </open-files>
 </project-private>

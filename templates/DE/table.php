@@ -38,7 +38,10 @@ switch( $action ){
   case "cancel":
     
               break;
-
+            
+  case "spreadSheet":
+              exportSpreadSheet();
+              break;
   default:
     
 }
@@ -70,6 +73,11 @@ echo '<div id="statusbar-total">';
 
 echo '</div>';
 
+echo '<div id="menu-bar">';
+  echo '<div id="links">';
+  echo '<a href="./?day='.$day.'&doSomething=spreadSheet" >[download spreadsheet]</a>';
+  echo '</div>';
+echo '</div>';
 
 echo "<p>";
 echo '<pre>';

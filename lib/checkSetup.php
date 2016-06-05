@@ -11,3 +11,9 @@
 if (!is_writable("./logging/")){
   die("logging path is not writable. errorcode ".ERR_LOGGING_PATH_NOT_WRITEABLE);
 }
+
+
+// check if the logging path is writeable
+if (!is_writable("./cache/")){
+  die("cache path is not writable. errorcode ".ERR_CACHE_PATH_NOT_WRITEABLE);
+}

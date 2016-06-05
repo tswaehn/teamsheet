@@ -7,18 +7,9 @@
  */
 
 class Timesheet {
-  var $customers= array();
-  var $projects= array();
-  var $tasks= array();
 
   function __construct(){
-    global $timesheetTable;
     
-    // update all lists
-    $this->customers= $timesheetTable->getCustomers();
-    $this->projects= $timesheetTable->getProjects();
-    $this->tasks= $timesheetTable->getTasks();
-
     $this->script();
     
   }
@@ -136,9 +127,37 @@ $( document ).tooltip({
     
   }
   
+  function renderDurations( $timeSheetItems ){
+    if (empty($timeSheetItems)){
+      return "&nbsp;<br>&nbsp;";
+    }
+    
+    $totalHoursPerDay= 0;
+    $totalWorkHoursPerDay= 0;
+    $totalTimeOffPerDay=0;
+    
+    foreach ($timeSheetItems as $item){
+      $duration= $item["duration"];
+      $totalHoursPerDay+= $duration;
+      if ($item["factor"] > 0){
+        $totalWorkHoursPerDay+= $duration;
+      } else {
+        $totalTimeOffPerDay+= $duration;
+      }
+    }
+    
+    $out= $totalHoursPerDay ."<br>";
+    if ($totalTimeOffPerDay>0){
+      $out.= $totalWorkHoursPerDay ."|". $totalTimeOffPerDay;
+    } else {        
+      $out.= "&nbsp;";
+    }
+    
+    return $out;
+  }
   
   function renderCalenderView( $day, $mode ){
-    global $timesheetTable;
+    global $dbTimesheet;
     
     if ($mode== "edit"){
       $active= "not-active";
@@ -174,13 +193,14 @@ $( document ).tooltip({
     $dateRow.="</tr>";
 
     // --- get all items for this month
-    $timeSheetItems= $timesheetTable->getEntriesForThisMonth( $day );
+    $timeSheetItems= $dbTimesheet->getEntriesForThisMonth( $day );
     
     // --- prepare the row for duration related data
     $statusRow="<tr>";
     foreach ($days as $timestamp=>$item){
       
-      $duration= $timesheetTable->getSumDurationsForDay( $timestamp );
+      $itemsOfTheDay= $timeSheetItems[$timestamp];
+      $duration= $dbTimesheet->getSumDurationsForDay( $timestamp );
       
       $class= "duration";
       if ($timestamp == $day){
@@ -196,8 +216,9 @@ $( document ).tooltip({
         $class.= " wow";
       }
       $class.= " ".$active;      
-      $tooltip= $this->renderToolTip($timeSheetItems[$timestamp]);
-      $statusRow.= '<td title="'.$tooltip.'" ><a href="?day='.$timestamp.'" class="'.$class.'"  >'.$duration.'<br>3|5</a> </td>';
+      $tooltip= $this->renderToolTip($itemsOfTheDay);
+      $durationStr= $this->renderDurations($itemsOfTheDay);
+      $statusRow.= '<td title="'.$tooltip.'" ><a href="?day='.$timestamp.'" class="'.$class.'"  >'.$durationStr.'</a> </td>';
     }
     $statusRow.="</tr>";
         
@@ -251,12 +272,12 @@ $( document ).tooltip({
     
     //array_unshift( $list, "");
     foreach($list as $item ){
-      if (strcasecmp($value, $item)==0){
+      if (strcasecmp($value, $item["name"])==0){
         $selected= "selected";
       } else {
         $selected= "";
       }
-      $text.= '<option '.$selected.' >'.$item.'</option>';
+      $text.= '<option '.$selected.' >'.$item["name"].'</option>';
     }
     $text.= '</select>';
     
@@ -276,14 +297,16 @@ $( document ).tooltip({
   }
   
   function renderWorkLine( $data, $mode ){
-    
+    global $dbTimesheet;
     $fields= array( "customer", "project", "task", "duration", "itemAction" );
     
     $line= "<tr>";
     foreach ($fields as $field){
       $line.= "<td>";
       if (!isset($data[$field])){
-        $data[$field]= "";
+        $name= "";
+      } else {
+        $name= $data[$field];
       }
       if ($field=="itemAction"){
          $width="500px";
@@ -292,15 +315,15 @@ $( document ).tooltip({
        }
       if ($mode=="view"){
         //$line.= '<input disabled type="edit" name="'.$field.'[]" value="'.$data[$field].'" style="width:'.$width.';" />'; // note: disabled fields will not be posted!!
-        $line.= $data[$field];
-        $line.= '<input type="hidden" name="'.$field.'[]" value="'.$data[$field].'" />';
+        $line.= $name;
+        $line.= '<input type="hidden" name="'.$field.'[]" value="'.$name.'" />';
       } else {
          switch ($field){
-          case "customer": $line.= $this->renderDropDown( $this->customers, "customer", $data[$field] );break;
-          case "project": $line.= $this->renderDropDown( $this->projects, "project", $data[$field] );break;
-          case "task": $line.= $this->renderDropDown( $this->tasks, "task", $data[$field] );break;
-          case "duration": $line.= $this->renderNumber( $field, $data[$field] ); break;
-          case "itemAction": $line.= $this->renderText( $field, $data[$field] ); break;
+          case "customer": $line.= $this->renderDropDown( $dbTimesheet->customers, "customer", $name );break;
+          case "project": $line.= $this->renderDropDown( $dbTimesheet->projects, "project", $name );break;
+          case "task": $line.= $this->renderDropDown( $dbTimesheet->tasks, "task", $name );break;
+          case "duration": $line.= $this->renderNumber( $field, $name ); break;
+          case "itemAction": $line.= $this->renderText( $field, $name ); break;
 
           default:
               $line.= $data[$field];
@@ -316,7 +339,7 @@ $( document ).tooltip({
   
   
   function renderTable( $day, $data, $mode= "view" ){
-    global $timesheetTable;
+    global $dbTimesheet;
     
     // start the form
     echo '<form name="tableForm" id="myForm" method="post" action="./" >';
@@ -407,7 +430,7 @@ $( document ).tooltip({
   }
   
   function saveTableToDB( $data ){
-    global $timesheetTable;
+    global $dbTimesheet;
     global $user;
     
     lg( "saving now!" );
@@ -419,37 +442,35 @@ $( document ).tooltip({
     foreach( $data as $item ){
       $dbItem= array();
       lg( print_r($item["customer"] ,true ));
-      lg( print_r($this->customers, true ));
+      lg( print_r($dbTimesheet->customers, true ));
       
-      $key= array_search( $item["customer"], $this->customers );
-      $dbItem[]= $key;
-      
-      $key= array_search( $item["project"], $this->projects );
-      $dbItem[]= $key;
-      
-      $key= array_search( $item["task"], $this->tasks );
-      $dbItem[]= $key;
+      $dbItem[]= $dbTimesheet->getCustomerIDbyName($item["customer"]);
+      $dbItem[]= $dbTimesheet->getProjectIDbyName($item["project"]);
+      $dbItem[]= $dbTimesheet->geTaskIDbyName( $item["task"]);
       
       $dbItem[]= $user->uid;
       
       $dbItem[]= MyTime::timestampToMySQL( $day );
       
-      $dbItem[]= $item["duration"];
+      $duration= str_replace(',', '.', $item["duration"]);
+      $duration= floatval($duration);
+      $duration= round( $duration, 1);
+      $dbItem[]= $duration;
       
       $dbItem[]= $item["itemAction"];
 
       $dbData[]= $dbItem;
     }
     
-    $timesheetTable->removeTimesheetItems( $user->uid, MyTime::timestampToMySQL($day) );
-    $timesheetTable->saveTimesheetItem( $dbData ); 
+    $dbTimesheet->removeTimesheetItems( $user->uid, MyTime::timestampToMySQL($day) );
+    $dbTimesheet->saveTimesheetItem( $dbData ); 
   }
   
   function loadTableFromDB($day){
-    global $timesheetTable;
+    global $dbTimesheet;
     global $user;
 
-    $data= $timesheetTable->getTimesheetItems( $user->uid, MyTime::timestampToMySQL($day) );
+    $data= $dbTimesheet->getTimesheetItems( $user->uid, MyTime::timestampToMySQL($day) );
     
     if (empty($data)){
       $data[]= array();

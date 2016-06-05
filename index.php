@@ -37,6 +37,7 @@ include("./lib/timesheet.php");
 include("./lib/drawCalendar.php");
 include("./lib/statistics.php");
 include("./lib/myTime.php");
+include("./lib/spreadSheet.php");
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -130,7 +131,7 @@ if ( isset( $_REQUEST['updatepasswd'] ) )
 } // if(isset($updatepasswd)
 
 lg( "user ".$user->uname." ".$user->uid );
-$timesheetTable= new dbTimesheetTable();
+$dbTimesheet= new dbTimesheetTable();
 
 ?>
 

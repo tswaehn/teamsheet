@@ -121,7 +121,12 @@ div.ui-tooltip {
   border:none;
 }
 
-.ui-tooltip.td {
-  padding:3px;
+.ui-tooltip td {
+  padding-left:10px;
+  padding-right:10px;
+  padding-top:3px;
+  padding-bottom: 3px;
   font-size:x-small;
+  border:thin solid grey;
 }
+

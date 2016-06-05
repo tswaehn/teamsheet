@@ -10,10 +10,10 @@ class Statistics {
 
   
   function renderWeek( $day ){
-    global $timesheetTable;
+    global $dbTimesheet;
     
     $week= date("W", $day);
-    $data= $timesheetTable->getDurationsByDay( $week );
+    $data= $dbTimesheet->getDurationsByDay( $week );
     
     $today= date("N", $day);
     
